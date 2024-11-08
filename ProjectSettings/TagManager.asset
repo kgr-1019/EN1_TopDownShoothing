@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Gun
+  - Door
+  - Bottun
+  - Wall
+  - Button
+  - Enemy
+  - EnemyGun
   layers:
   - Default
   - TransparentFX
