@@ -8,7 +8,7 @@ public class Gun : MonoBehaviour
     public Transform player;// プレイヤーのトランスフォーム
     public GameObject firePosition;// 銃口のプレハブ
     public Bullet bullet;// Bulletクラスへの参照
-    public Vector3 hitPos;// Rayが当たる場所
+    private Vector3 hitPos;// Rayが当たる場所
     public bool hasGun; // 銃を持っているかどうかのフラグ
     public EnemyControl enemy;// EnemyControlクラスへの参照
     private Vector3 direction;// 敵の攻撃関数の引数
@@ -37,23 +37,19 @@ public class Gun : MonoBehaviour
 
     private void RotateGun()
     {
-        // マウスの位置を世界座標に変換
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitPoint;
 
         if (Physics.Raycast(ray, out hitPoint))
         {
-            float h = transform.position.y;
+            float h = transform.position.y - hitPoint.point.y;
             Vector3 direction = ray.direction * -1;
             float theta = Mathf.Acos(Vector3.Dot(direction, Vector3.up));
             float S = h / Mathf.Cos(theta);
-            Vector3 point = (hitPoint.point + direction) * S;
+            Vector3 point = hitPoint.point + direction * S;
 
             transform.LookAt(point);
-
         }
-        // Rayのシーンビューでの可視化
-        //Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 0.1f);
     }
 
     void Shot()

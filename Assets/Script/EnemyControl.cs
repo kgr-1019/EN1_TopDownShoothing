@@ -13,25 +13,28 @@ public class EnemyControl : MonoBehaviour
     private int currentWaypointIndex = 0;// 現在の目的地
 
     [Header("視野の設定")]
-    public float fieldOfViewAngle = 110f; // 扇状の角度
-    public float detectionRange = 15f; // 視野の距離
     public Transform player; // プレイヤーのTransform
-    public float lookAroundDuration = 1.5f; // 振り向く時間
-    public float lookAroundSpeed = 60f; // 振り向く角速度
+    private float lookAroundSpeed = 60f; // 振り向く角速度
     private float angle = 90.0f;
 
     [Header("プレイヤーを探す動作")]
-    private Quaternion lastPlayerDirection; // 最後にプレイヤーを見ていた向き
+    private float searchingCount = 0;
+    private float searchingTimer = 6f;// 何秒探すか
+    private float rotateTime = 2f;// どのくらいの間きょろきょろするかのタイマー
+    private float searchAngle = 45f;// どのくらい振り向くかの角度
+    private bool isLeftRotate = true;// 左に振り向くかどうか
+    private float rotateCount = 0; // 片側振り向いてる時間
 
     [Header("弾を撃つ")]
     public EnemyGun enemyGun; // EnemyGunコンポーネントを参照
-    [SerializeField]float shotTimer = 0;// 弾を撃つまでの時間
-    [SerializeField] float reloadTimer = 0;// リロードまでの時間
+    private float shotTimer = 0;// 弾を撃つまでの時間
+    private float reloadCoolTimer = 0;// リロードまでの時間
 
     [Header("HP")]
     private int maxHP = 5;// 最大HP
     private int currentHP;// 現在のHP
     public Door door;// Doorコンポーネントを参照
+
 
     void Start()
     {
@@ -40,6 +43,8 @@ public class EnemyControl : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         // 最初の目的地を入れる
         navMeshAgent.SetDestination(waypointArray[currentWaypointIndex].position);
+
+        //originalRotation = transform.rotation;//元の回転を保存
     }
 
     void Update()
@@ -49,7 +54,18 @@ public class EnemyControl : MonoBehaviour
 
         // 弾を撃つ間隔
         shotTimer += Time.deltaTime;
-        reloadTimer += Time.deltaTime;
+        reloadCoolTimer += Time.deltaTime;
+
+        if (searchingCount > 0)
+        {
+            Search();
+            searchingCount -= Time.deltaTime;
+        }
+        else
+        {
+            Debug.Log("サーチ終了しました");
+            navMeshAgent.isStopped = false;
+        }
     }
     
     void Move()
@@ -91,14 +107,13 @@ public class EnemyControl : MonoBehaviour
             Debug.DrawRay(transform.position, direction,Color.blue,0.2f);
             int layer = ~LayerMask.GetMask("Item");
 
-            if (Physics.Raycast(ray, out hit,1000,layer))
+            if (Physics.Raycast(ray, out hit,12,layer))
             {
                 Debug.DrawLine(transform.position, hit.point,Color.red,0.3f);
                 // Rayがプレイヤーに当たったら、プレイヤーが見えている
                 if (hit.collider.CompareTag("Player"))
                 {
-                    Debug.Log("Playerに当たった");
-                    // プレイヤーを見つけた時のアクション
+                    // 弾を撃つ
                     Fire();
 
                     // 移動を止める
@@ -107,20 +122,41 @@ public class EnemyControl : MonoBehaviour
                     // プレイヤーの方向を向く
                     Quaternion lookRotation = Quaternion.LookRotation(direction);
                     transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * lookAroundSpeed);
-                }
-                else
-                {
-                    // 移動を止める
-                    navMeshAgent.isStopped = false;
-                }
 
+                    searchingCount = searchingTimer;
+                }
             }
+        }
+        
+    }
+
+    // プレイヤーを探す動作
+    void Search()
+    {
+        Debug.Log("サーチ中");
+
+        // 回転角度を計算
+        float rotationSpeed = searchAngle / rotateTime * Time.deltaTime;
+        float rotationDirection = isLeftRotate ? -rotationSpeed : rotationSpeed;
+
+        // 回転を実行
+        transform.Rotate(0.0f, rotationDirection, 0.0f);
+
+        // 回転カウントを更新
+        rotateCount += Time.deltaTime;
+
+        // rotateCountがrotateTimeに達したら、左右回転を切り替え
+        if (rotateCount >= rotateTime)
+        {
+            isLeftRotate = !isLeftRotate;
+            rotateCount = 0.0f;
         }
     }
 
+
     public void Fire()
     {
-        if (reloadTimer <= 3.0f)
+        if (reloadCoolTimer <= 3.0f)
         {
             // 弾を撃つ
             if (shotTimer >= 0.5f)
@@ -131,9 +167,9 @@ public class EnemyControl : MonoBehaviour
         }
 
         // リロード
-        if(reloadTimer >= 6.0f)
+        if(reloadCoolTimer >= 5.0f)
         {
-            reloadTimer = 0;
+            reloadCoolTimer = 0;
         }
     }
 

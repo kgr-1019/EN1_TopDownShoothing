@@ -6,22 +6,8 @@ public class Hand : MonoBehaviour
 {
     private GameObject gun; // 銃のインスタンス
     private Transform gunTransform; // 銃のトランスフォーム
-    public GameObject player;// プレイヤーのプレハブ
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     
-
     // 銃をHandの位置にセット
     public void PickUpGun(GameObject pickedGun)
     {
