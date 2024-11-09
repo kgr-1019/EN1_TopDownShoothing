@@ -26,7 +26,7 @@ public class PlayerControl : MonoBehaviour
             Move();
         }
 
-        RotateTowardsMouse();
+        RotatePlayer();
     }
 
     private void Move()
@@ -41,21 +41,19 @@ public class PlayerControl : MonoBehaviour
         transform.position += movement * moveSpeed * Time.deltaTime;
     }
 
-    private void RotateTowardsMouse()
+    private void RotatePlayer()
     {
-        // マウスの位置を世界座標に変換
+        // マウスの位置をワールド座標に変換
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane plane = new Plane(Vector3.up, Vector3.zero);
+        RaycastHit hit;
+        float rotateSpeed = 5.0f;
 
-        float rayLength;
-        if (plane.Raycast(ray, out rayLength))
+        if (Physics.Raycast(ray, out hit))
         {
-            Vector3 mouseWorldPosition = ray.GetPoint(rayLength);
-
-            // マウスの位置にキャラクターの正面を向かせる
-            Vector3 direction = (mouseWorldPosition - transform.position).normalized;
-            direction.y = 0; // Y軸を0にして平面上の移動にする
-            transform.forward = direction; // キャラクターの正面をマウスの方向に向ける
+            Vector3 targetPoint = new Vector3(hit.point.x, transform.position.y, hit.point.z);
+            Vector3 direction = (targetPoint - transform.position).normalized;
+            Quaternion rotate = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, rotateSpeed);
         }
     }
 
@@ -69,8 +67,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (other.CompareTag("Gun"))
         {
-            handScript.PickUpGun();
-            Destroy(other.gameObject);
+            handScript.PickUpGun(other.gameObject);
         }
     }
 }

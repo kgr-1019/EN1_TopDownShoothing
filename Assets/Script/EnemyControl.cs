@@ -18,6 +18,7 @@ public class EnemyControl : MonoBehaviour
     public Transform player; // プレイヤーのTransform
     public float lookAroundDuration = 1.5f; // 振り向く時間
     public float lookAroundSpeed = 60f; // 振り向く角速度
+    private float angle = 90.0f;
 
     [Header("プレイヤーを探す動作")]
     private Quaternion lastPlayerDirection; // 最後にプレイヤーを見ていた向き
@@ -25,6 +26,7 @@ public class EnemyControl : MonoBehaviour
     [Header("弾を撃つ")]
     public EnemyGun enemyGun; // EnemyGunコンポーネントを参照
     [SerializeField]float shotTimer = 0;// 弾を撃つまでの時間
+    [SerializeField] float reloadTimer = 0;// リロードまでの時間
 
     [Header("HP")]
     private int maxHP = 5;// 最大HP
@@ -42,13 +44,12 @@ public class EnemyControl : MonoBehaviour
 
     void Update()
     {
-        //Debug.Log("探す"+lookAroundTime);
-        
-        Move();
         CheckPlayerInView();
+        Move();
 
         // 弾を撃つ間隔
         shotTimer += Time.deltaTime;
+        reloadTimer += Time.deltaTime;
     }
     
     void Move()
@@ -68,57 +69,71 @@ public class EnemyControl : MonoBehaviour
         // プレイヤーが存在しない場合は何もしない
         if (player == null) return;
 
-        Vector3 directionToPlayer = player.position - transform.position;
 
-        // プレイヤーが視野内かつ視野内の距離内か確認
-        if (directionToPlayer.magnitude <= detectionRange && IsPlayerVisible(directionToPlayer))
+        Vector3 playerPos = player.transform.position;
+        Vector3 enemyPos = transform.position;
+
+        Vector3 direction = (playerPos - enemyPos).normalized;
+        float dot = Vector3.Dot(transform.forward, direction);
+        float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
+
+        if (theta > angle)
         {
-            // プレイヤーを検知した時のアクション
-            Fire(directionToPlayer);
+            Debug.Log("視野外");
         }
         else
         {
-            // プレイヤーを見つけられなかった場合、移動を再開
-            navMeshAgent.isStopped = false;
-        }
-    }
+            Debug.Log("視野内");
 
-    // プレイヤーが視野内かどうか
-    bool IsPlayerVisible(Vector3 directionToPlayer)
-    {
-        //float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
-
-        //// プレイヤーが視野内か確認
-        //if (angleToPlayer <= fieldOfViewAngle / 2)
-        //{
+            // Rayを飛ばす
+            Ray ray = new Ray(transform.position, direction);
             RaycastHit hit;
-            // 方向にRayを飛ばす
-            if (Physics.Raycast(transform.position, directionToPlayer.normalized, out hit, detectionRange))
+            Debug.DrawRay(transform.position, direction,Color.blue,0.2f);
+            int layer = ~LayerMask.GetMask("Item");
+
+            if (Physics.Raycast(ray, out hit,1000,layer))
             {
+                Debug.DrawLine(transform.position, hit.point,Color.red,0.3f);
                 // Rayがプレイヤーに当たったら、プレイヤーが見えている
                 if (hit.collider.CompareTag("Player"))
                 {
-                    return true;
+                    Debug.Log("Playerに当たった");
+                    // プレイヤーを見つけた時のアクション
+                    Fire();
+
+                    // 移動を止める
+                    navMeshAgent.isStopped = true;
+
+                    // プレイヤーの方向を向く
+                    Quaternion lookRotation = Quaternion.LookRotation(direction);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * lookAroundSpeed);
                 }
+                else
+                {
+                    // 移動を止める
+                    navMeshAgent.isStopped = false;
+                }
+
             }
-        //}
-        return false;
+        }
     }
 
-    public void Fire(Vector3 directionToPlayer)
+    public void Fire()
     {
-        // 移動を止める
-        navMeshAgent.isStopped = true;
-
-        // プレイヤーの方向を向く
-        lastPlayerDirection = Quaternion.LookRotation(directionToPlayer); // プレイヤーの方向を記録
-        transform.rotation = Quaternion.Slerp(transform.rotation, lastPlayerDirection, Time.deltaTime * 5f);
-
-        // 弾を撃つ
-        if (shotTimer >= 0.5f)
+        if (reloadTimer <= 3.0f)
         {
-            enemyGun.Shot();
-            shotTimer = 0;
+            // 弾を撃つ
+            if (shotTimer >= 0.5f)
+            {
+                enemyGun.Shot();
+                shotTimer = 0;
+            }
+        }
+
+        // リロード
+        if(reloadTimer >= 6.0f)
+        {
+            reloadTimer = 0;
         }
     }
 

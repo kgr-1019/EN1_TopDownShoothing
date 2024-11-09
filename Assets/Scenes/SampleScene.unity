@@ -205,7 +205,7 @@ GameObject:
   - component: {fileID: 59438501}
   - component: {fileID: 59438500}
   - component: {fileID: 59438499}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Gun
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ Transform:
   m_GameObject: {fileID: 59438491}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.22, y: 0.21000004, z: 7.21}
+  m_LocalPosition: {x: -2.4, y: 0.21000004, z: 61.4}
   m_LocalScale: {x: 0.78462005, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -326,7 +326,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 61991776}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EnemyFirePosition
   m_TagString: EnemyGun
   m_Icon: {fileID: 0}
@@ -1217,7 +1217,7 @@ GameObject:
   - component: {fileID: 651413747}
   - component: {fileID: 651413749}
   - component: {fileID: 651413748}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EnemyMuzzle
   m_TagString: EnemyGun
   m_Icon: {fileID: 0}
@@ -2375,7 +2375,7 @@ GameObject:
   - component: {fileID: 1182929821}
   - component: {fileID: 1182929820}
   - component: {fileID: 1182929823}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EnemyGun
   m_TagString: EnemyGun
   m_Icon: {fileID: 0}
@@ -2797,7 +2797,7 @@ GameObject:
   - component: {fileID: 1307386855}
   - component: {fileID: 1307386858}
   - component: {fileID: 1307386857}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Muzzle
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -5069,9 +5069,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2095070815}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FirePosition
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5353,6 +5353,10 @@ PrefabInstance:
       value: Gun
       objectReference: {fileID: 0}
     - target: {fileID: 5173857085414989159, guid: 100803af207396a4ca2dc6b7f0356fcd, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5173857085414989159, guid: 100803af207396a4ca2dc6b7f0356fcd, type: 3}
       propertyPath: m_TagString
       value: Gun
       objectReference: {fileID: 0}
@@ -5374,7 +5378,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8662542839165361537, guid: 100803af207396a4ca2dc6b7f0356fcd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.22
+      value: -2.4
       objectReference: {fileID: 0}
     - target: {fileID: 8662542839165361537, guid: 100803af207396a4ca2dc6b7f0356fcd, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5382,7 +5386,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8662542839165361537, guid: 100803af207396a4ca2dc6b7f0356fcd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.21
+      value: 61.4
       objectReference: {fileID: 0}
     - target: {fileID: 8662542839165361537, guid: 100803af207396a4ca2dc6b7f0356fcd, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5744,7 +5748,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5626421227306916411, guid: 72f34b94f61adf543baf50c263ec66be, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.94
+      value: 57.2
       objectReference: {fileID: 0}
     - target: {fileID: 5626421227306916411, guid: 72f34b94f61adf543baf50c263ec66be, type: 3}
       propertyPath: m_LocalRotation.w

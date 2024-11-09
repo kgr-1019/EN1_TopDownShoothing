@@ -9,7 +9,7 @@ public class Gun : MonoBehaviour
     public GameObject firePosition;// 銃口のプレハブ
     public Bullet bullet;// Bulletクラスへの参照
     public Vector3 hitPos;// Rayが当たる場所
-    private bool hasGun; // 銃を持っているかどうかのフラグ
+    public bool hasGun; // 銃を持っているかどうかのフラグ
     public EnemyControl enemy;// EnemyControlクラスへの参照
     private Vector3 direction;// 敵の攻撃関数の引数
     
@@ -29,31 +29,31 @@ public class Gun : MonoBehaviour
 
         if (hasGun)
         {
-            RotateTowardsMouse();
+            RotateGun();
         }
     }
 
-    public void EnableGun()
-    {
-        hasGun = true; // 銃が有効化されたらフラグを設定
-    }
+    
 
-    private void RotateTowardsMouse()
+    private void RotateGun()
     {
         // マウスの位置を世界座標に変換
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane plane = new Plane(Vector3.up, Vector3.zero);
+        RaycastHit hitPoint;
 
-        float rayLength;
-        if (plane.Raycast(ray, out rayLength))
+        if (Physics.Raycast(ray, out hitPoint))
         {
-            Vector3 mouseWorldPosition = ray.GetPoint(rayLength);
+            float h = transform.position.y;
+            Vector3 direction = ray.direction * -1;
+            float theta = Mathf.Acos(Vector3.Dot(direction, Vector3.up));
+            float S = h / Mathf.Cos(theta);
+            Vector3 point = (hitPoint.point + direction) * S;
 
-            // マウスの位置にキャラクターの正面を向かせる
-            Vector3 direction = (mouseWorldPosition - transform.position).normalized;
-            direction.y = 0; // Y軸を0にして平面上の移動にする
-            transform.forward = direction; // キャラクターの正面をマウスの方向に向ける
+            transform.LookAt(point);
+
         }
+        // Rayのシーンビューでの可視化
+        //Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 0.1f);
     }
 
     void Shot()
