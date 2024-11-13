@@ -11,6 +11,9 @@ TagManager:
   - Button
   - Enemy
   - EnemyGun
+  - Bom
+  - Bullet
+  - Enemy1
   layers:
   - Default
   - TransparentFX
@@ -19,7 +22,7 @@ TagManager:
   - Water
   - UI
   - Item
-  - 
+  - ground
   - 
   - 
   - 

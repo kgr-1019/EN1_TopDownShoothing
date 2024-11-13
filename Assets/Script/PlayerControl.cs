@@ -1,23 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class PlayerControl : MonoBehaviour
 {
     public float moveSpeed = 5f; // キャラクターの移動速度
     public Hand handScript; // Handクラスへの参照
+    public GameObject hand;
     public float autoMoveSpeed = 2f; // 自動移動速度
     public Clear fadeManager; // FadeManagerクラスへの参照
-
-    void Start()
-    {
-        
-    }
+    public Gun gun;
+    
 
     void Update()
     {
         // Z軸位置が85を超えた場合は自動移動のみ
-        if (transform.position.z > 85.0f)
+        if (transform.position.z > 200.0f)
         {
             ClearMove();
         }
@@ -26,7 +26,17 @@ public class PlayerControl : MonoBehaviour
             Move();
         }
 
+
         RotatePlayer();
+
+
+        if (handScript.isParent)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                handScript.Fire();
+            }
+        }
     }
 
     private void Move()
@@ -63,11 +73,23 @@ public class PlayerControl : MonoBehaviour
         transform.position += Vector3.forward * autoMoveSpeed * Time.deltaTime;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider collision)
     {
-        if (other.CompareTag("Gun"))
+
+        if (collision.gameObject.CompareTag("Gun"))
         {
-            handScript.PickUpGun(other.gameObject);
+            //gunPositionに親子付けする
+            collision.gameObject.transform.SetParent(hand.transform);
+
+
+
+            if (collision.gameObject.TryGetComponent(out gun))
+            {
+                Vector3 gunPosition = new Vector3(0.05f, 0.1f, 0.1f); // ここで銃の位置を指定
+                Quaternion gunRotation = Quaternion.Euler(0, 0, 0);
+
+                handScript.PickUpGun(gun);
+            }
         }
     }
 }

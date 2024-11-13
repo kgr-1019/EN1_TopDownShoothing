@@ -11,12 +11,6 @@ public class Bullet : MonoBehaviour
     public float elapsedTime = 0.0f; // Œo‰ßŽžŠÔ
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-       
-    }
-
     // Update is called once per frame
     void Update()
     {

@@ -9,33 +9,47 @@ public class Gun : MonoBehaviour
     public GameObject firePosition;// 銃口のプレハブ
     public Bullet bullet;// Bulletクラスへの参照
     private Vector3 hitPos;// Rayが当たる場所
-    public bool hasGun; // 銃を持っているかどうかのフラグ
+    public bool isParent = false; // ペアレントされているかどうかのフラグ
     public EnemyControl enemy;// EnemyControlクラスへの参照
     private Vector3 direction;// 敵の攻撃関数の引数
-    
-    private void Awake()
+    public float shotTimer = 0.5f;
+    public float shotCount = 0;
+    public Bom bom;// Bulletクラスへの参照
+    private float rotateSpeed = 50f;
+
+
+    void Start()
     {
-        hasGun = false; // 初期状態ではGunを持っていない
+        //handScript.SetParent(false); 
     }
 
     // Update is called once per frame
-    void Update()
+    public virtual void Update()
     {
-        // 左クリックしたら
-        if (hasGun && Input.GetMouseButtonDown(0))
-        {
-            Shot();
-        }
+        shotCount += Time.deltaTime;
 
-        if (hasGun)
+        if (isParent)
+        {
+
+            MouseRotateGun();
+        }
+        else
         {
             RotateGun();
         }
     }
 
-    
+    public void SetParent(bool parent)
+    {
+        isParent = parent;
+    }
 
-    private void RotateGun()
+    void RotateGun()
+    {
+        transform.Rotate(0, rotateSpeed * Time.deltaTime, 0);
+    }
+
+    private void MouseRotateGun()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitPoint;
@@ -52,48 +66,63 @@ public class Gun : MonoBehaviour
         }
     }
 
-    void Shot()
+    public virtual void Shot()
     {
-        RaycastHit hit;// //Rayが当たったオブジェクトの情報を入れる
-        Ray fireRay = new Ray(firePosition.transform.position, firePosition.transform.forward);// どこからどこに向けて飛ばすか
 
-        // ラインの長さ
-        Vector3 lineRange = firePosition.transform.forward * 5.0f;
-
-        Vector3 firePos = firePosition.transform.position;// 始点
-
-        if (Physics.Raycast(fireRay, out hit))
+        if (shotCount >= shotTimer)
         {
-            // 当たったら
-            hitPos = hit.point;// オブジェクトとの衝突座標を取得
+            RaycastHit hit;// //Rayが当たったオブジェクトの情報を入れる
+            Ray fireRay = new Ray(firePosition.transform.position, firePosition.transform.forward);// どこからどこに向けて飛ばすか
 
-            if (hit.collider.CompareTag("Button"))
+            // ラインの長さ
+            Vector3 lineRange = firePosition.transform.forward * 5.0f;
+
+            Vector3 firePos = firePosition.transform.position;// 始点
+
+            if (Physics.Raycast(fireRay, out hit))
             {
-                Button hitButton = hit.collider.GetComponent<Button>();
-                if (hitButton != null)
+                // 当たったら
+                hitPos = hit.point;// オブジェクトとの衝突座標を取得
+
+                if (hit.collider.CompareTag("Button"))
                 {
-                    // 当たったボタンがコネクトされたドアを開く
-                    hitButton.OnButtonPressed();
+                    Destroy(hit.collider.gameObject);
+                }
+
+                if (hit.collider.CompareTag("Enemy"))
+                {
+                    hit.collider.gameObject.GetComponent<EnemyControl>().ReduceHP(1);
+                }
+
+                if (hit.collider.CompareTag("Bom"))
+                {
+                    hit.collider.gameObject.GetComponent<Bom>().Explosion();
                 }
             }
-
-            // 敵のHPを減らす
-            if (hit.collider.CompareTag("Enemy"))
+            else
             {
-                enemy.ReduceHP();
+                // 当たらなかったら
+                hitPos = firePosition.transform.position + lineRange; // 終点
             }
+
+            // Rayのシーンビューでの可視化
+            Debug.DrawRay(fireRay.origin, fireRay.direction * 100, Color.red, 0.1f);
+
+            // 弾を生成
+            Bullet bulletScript = Instantiate(bullet, firePos, Quaternion.identity);
+            bulletScript.SetUp(firePos, hitPos);// 始点と終点を渡す
+
+
+            shotCount = 0;
         }
-        else
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
         {
-            // 当たらなかったら
-            hitPos = firePosition.transform.position + lineRange; // 終点
+            BoxCollider collider = GetComponent<BoxCollider>();
+            collider.enabled = false;
         }
-
-        // Rayのシーンビューでの可視化
-        Debug.DrawRay(fireRay.origin, fireRay.direction * 100, Color.red, 0.1f);
-
-        // 弾を生成
-        Bullet bulletScript = Instantiate(bullet, firePos, Quaternion.identity);
-        bulletScript.SetUp(firePos, hitPos);// 始点と終点を渡す
     }
 }

@@ -5,12 +5,13 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    public List<Button> connectedButtons = new List<Button>();// ボタンの状態を管理するリスト
-    private bool isOpen = false; // ドアが開いているかのフラグ
+    [SerializeField] private List<GameObject> connectedButtons = new List<GameObject>();// ボタンの状態を管理するリスト
+    //private bool isOpen = false; // ドアが開いているかのフラグ
     public float speed = 1.0f; // 移動速度
-    private float targetY = -3.0f; // 目標Y座標
+    private float targetY = -6.0f; // 目標Y座標
     private Vector3 originalPosition; // ドアの元の位置
     private Vector3 targetPosition; // 現在の目標位置
+    bool allPressed = false;
 
     // Start is called before the first frame update
     void Start()
@@ -21,42 +22,32 @@ public class Door : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isOpen)
-        {
-            // 下に下がる
-            transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.deltaTime);
-        }
-    }
-
-    // ドアを開けるメソッド
-    public void OpenDoor()
-    {
-        if (!isOpen)
-        {
-            isOpen = true;
-            targetPosition = new Vector3(originalPosition.x, targetY, originalPosition.z); // 開いた際の目標位置を設定
-        }
-    }
-
-    // ボタンが押されたときに呼び出されるメソッド
-    public void CheckButtons()
-    {
-        bool allPressed = true;
         
-        foreach (var button in connectedButtons)
+
+        for (int i = 0; i < connectedButtons.Count; i++)
         {
-            if (button != null && !button.isPressed)
+            if(connectedButtons[i] != null)
             {
                 allPressed = false;
-                break; // 一つでも押されていないボタンがあれば終了
+                break;
+            }
+            else
+            {
+                allPressed = true;
+
             }
         }
-        
 
-        // 全てのボタンが押された場合
-        if (allPressed && !isOpen)
+        if (allPressed)
         {
-            OpenDoor();
+            // 下に下がる
+            targetPosition = new Vector3(originalPosition.x, targetY, originalPosition.z); // 開いた際の目標位置を設定
+            transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.deltaTime);
+        }
+
+        if (transform.position.y <= -6.0f) 
+        {
+            Destroy(gameObject); 
         }
     }
 }

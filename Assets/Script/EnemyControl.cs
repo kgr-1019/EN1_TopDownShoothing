@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyControl : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class EnemyControl : MonoBehaviour
     [SerializeField]
     [Header("巡回する地点の配列")]
     private Transform[] waypointArray;
-    private NavMeshAgent navMeshAgent;// NavMeshAgentコンポーネントを入れる変数
+    private NavMeshAgent navMeshAgent=null;// NavMeshAgentコンポーネントを入れる変数
     private int currentWaypointIndex = 0;// 現在の目的地
 
     [Header("視野の設定")]
@@ -33,7 +34,7 @@ public class EnemyControl : MonoBehaviour
     [Header("HP")]
     private int maxHP = 5;// 最大HP
     private int currentHP;// 現在のHP
-    public Door door;// Doorコンポーネントを参照
+    
 
 
     void Start()
@@ -41,10 +42,10 @@ public class EnemyControl : MonoBehaviour
         currentHP = maxHP;// HPをリセット
 
         navMeshAgent = GetComponent<NavMeshAgent>();
+
+        
         // 最初の目的地を入れる
         navMeshAgent.SetDestination(waypointArray[currentWaypointIndex].position);
-
-        //originalRotation = transform.rotation;//元の回転を保存
     }
 
     void Update()
@@ -63,7 +64,7 @@ public class EnemyControl : MonoBehaviour
         }
         else
         {
-            Debug.Log("サーチ終了しました");
+            //Debug.Log("サーチ終了しました");
             navMeshAgent.isStopped = false;
         }
     }
@@ -95,11 +96,11 @@ public class EnemyControl : MonoBehaviour
 
         if (theta > angle)
         {
-            Debug.Log("視野外");
+            //Debug.Log("視野外");
         }
         else
         {
-            Debug.Log("視野内");
+            //Debug.Log("視野内");
 
             // Rayを飛ばす
             Ray ray = new Ray(transform.position, direction);
@@ -174,14 +175,13 @@ public class EnemyControl : MonoBehaviour
     }
 
 
-    public void ReduceHP()
+    public void ReduceHP(int amount)
     {
-        currentHP -= 1;
+        currentHP -= amount;
 
         if (currentHP <= 0)
         {
             Destroy(gameObject);
-            door.CheckButtons();
         }
     }
 }
