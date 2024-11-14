@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
@@ -9,8 +10,8 @@ public class EnemyControl : MonoBehaviour
 
     [SerializeField]
     [Header("巡回する地点の配列")]
-    private Transform[] waypointArray;
-    private NavMeshAgent navMeshAgent=null;// NavMeshAgentコンポーネントを入れる変数
+    private List<Transform> waypointArray;
+    private NavMeshAgent navMeshAgent = null;// NavMeshAgentコンポーネントを入れる変数
     private int currentWaypointIndex = 0;// 現在の目的地
 
     [Header("視野の設定")]
@@ -34,7 +35,7 @@ public class EnemyControl : MonoBehaviour
     [Header("HP")]
     private int maxHP = 5;// 最大HP
     private int currentHP;// 現在のHP
-    
+
 
 
     void Start()
@@ -43,7 +44,7 @@ public class EnemyControl : MonoBehaviour
 
         navMeshAgent = GetComponent<NavMeshAgent>();
 
-        
+        if(waypointArray.Count <= 0) { return; }
         // 最初の目的地を入れる
         navMeshAgent.SetDestination(waypointArray[currentWaypointIndex].position);
     }
@@ -68,14 +69,15 @@ public class EnemyControl : MonoBehaviour
             navMeshAgent.isStopped = false;
         }
     }
-    
+
     void Move()
     {
+        if (waypointArray.Count <= 0) { return; }
         // 目的地点までの距離(remainingDistance)が目的地の手前までの距離(stoppingDistance)以下になったら
         if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
             // 目的地の番号を１更新（右辺を剰余演算子にすることで目的地をループさせれる）
-            currentWaypointIndex = (currentWaypointIndex + 1) % waypointArray.Length;
+            currentWaypointIndex = (currentWaypointIndex + 1) % waypointArray.Count;
             // 目的地を次の場所に設定
             navMeshAgent.SetDestination(waypointArray[currentWaypointIndex].position);
         }
@@ -105,12 +107,12 @@ public class EnemyControl : MonoBehaviour
             // Rayを飛ばす
             Ray ray = new Ray(transform.position, direction);
             RaycastHit hit;
-            Debug.DrawRay(transform.position, direction,Color.blue,0.2f);
+            Debug.DrawRay(transform.position, direction, Color.blue, 0.2f);
             int layer = ~LayerMask.GetMask("Item");
 
-            if (Physics.Raycast(ray, out hit,12,layer))
+            if (Physics.Raycast(ray, out hit, 12, layer))
             {
-                Debug.DrawLine(transform.position, hit.point,Color.red,0.3f);
+                Debug.DrawLine(transform.position, hit.point, Color.red, 0.3f);
                 // Rayがプレイヤーに当たったら、プレイヤーが見えている
                 if (hit.collider.CompareTag("Player"))
                 {
@@ -128,7 +130,7 @@ public class EnemyControl : MonoBehaviour
                 }
             }
         }
-        
+
     }
 
     // プレイヤーを探す動作
@@ -168,7 +170,7 @@ public class EnemyControl : MonoBehaviour
         }
 
         // リロード
-        if(reloadCoolTimer >= 5.0f)
+        if (reloadCoolTimer >= 5.0f)
         {
             reloadCoolTimer = 0;
         }

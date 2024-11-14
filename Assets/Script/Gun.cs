@@ -122,7 +122,7 @@ public class Gun : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             BoxCollider collider = GetComponent<BoxCollider>();
-            collider.enabled = false;
+            collider.enabled = false;// コンポーネントのアクティブ切り替え
         }
     }
 }

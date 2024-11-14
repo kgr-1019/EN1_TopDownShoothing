@@ -63,7 +63,7 @@ public class Explosion : MonoBehaviour
         if (collision.CompareTag("Wall"))
         {
             Debug.Log("HitWall");
-            collision.enabled = false;
+            collision.enabled = true;
             Debug.Log(this.transform.position);
             return;
         }
