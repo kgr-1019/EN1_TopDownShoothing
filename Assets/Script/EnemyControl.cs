@@ -29,8 +29,8 @@ public class EnemyControl : MonoBehaviour
 
     [Header("’e‚ðŒ‚‚Â")]
     public EnemyGun enemyGun; // EnemyGunƒRƒ“ƒ|[ƒlƒ“ƒg‚ðŽQÆ
-    private float shotTimer = 0;// ’e‚ðŒ‚‚Â‚Ü‚Å‚ÌŽžŠÔ
-    private float reloadCoolTimer = 0;// ƒŠƒ[ƒh‚Ü‚Å‚ÌŽžŠÔ
+    //private float shotTimer = 0;// ’e‚ðŒ‚‚Â‚Ü‚Å‚ÌŽžŠÔ
+    //private float reloadCoolTimer = 0;// ƒŠƒ[ƒh‚Ü‚Å‚ÌŽžŠÔ
 
     [Header("HP")]
     private int maxHP = 5;// Å‘åHP
@@ -55,8 +55,8 @@ public class EnemyControl : MonoBehaviour
         Move();
 
         // ’e‚ðŒ‚‚ÂŠÔŠu
-        shotTimer += Time.deltaTime;
-        reloadCoolTimer += Time.deltaTime;
+        //shotTimer += Time.deltaTime;
+        //reloadCoolTimer += Time.deltaTime;
 
         if (searchingCount > 0)
         {
@@ -159,21 +159,9 @@ public class EnemyControl : MonoBehaviour
 
     public void Fire()
     {
-        if (reloadCoolTimer <= 3.0f)
-        {
-            // ’e‚ðŒ‚‚Â
-            if (shotTimer >= 0.5f)
-            {
-                enemyGun.Shot();
-                shotTimer = 0;
-            }
-        }
-
-        // ƒŠƒ[ƒh
-        if (reloadCoolTimer >= 5.0f)
-        {
-            reloadCoolTimer = 0;
-        }
+        
+        enemyGun.Shot();
+              
     }
 
 

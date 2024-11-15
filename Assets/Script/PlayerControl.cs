@@ -14,7 +14,7 @@ public class PlayerControl : MonoBehaviour
     public Gun gun;
     
 
-    void Update()
+    public void Update()
     {
         // ZŽ²ˆÊ’u‚ª85‚ð’´‚¦‚½ê‡‚ÍŽ©“®ˆÚ“®‚Ì‚Ý
         if (transform.position.z > 200.0f)

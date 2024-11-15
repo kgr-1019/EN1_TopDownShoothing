@@ -14,14 +14,9 @@ public class Gun : MonoBehaviour
     private Vector3 direction;// 敵の攻撃関数の引数
     public float shotTimer = 0.5f;
     public float shotCount = 0;
-    public Bom bom;// Bulletクラスへの参照
+    //public Bom bom;// Bulletクラスへの参照
     private float rotateSpeed = 50f;
 
-
-    void Start()
-    {
-        //handScript.SetParent(false); 
-    }
 
     // Update is called once per frame
     public virtual void Update()

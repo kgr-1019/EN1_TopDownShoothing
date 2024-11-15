@@ -120,9 +120,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b70919fbc2a3b9f4488d0adb2128e023, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyFirePosition: {fileID: 3123262175389070857}
   player: {fileID: 7858426390374111547, guid: 039cf3607c5eaba4eb40e49f3aad54f3, type: 3}
+  firePosition: {fileID: 4979020445232400887}
   bullet: {fileID: 6378000419773604047, guid: 3c37658305e7c704e82ee73ced84f376, type: 3}
+  isParent: 0
+  enemy: {fileID: 5631992160012765971}
+  shotTimer: 0.5
+  shotCount: 0
+  bom: {fileID: 2103400517357932579, guid: c54617960fedbc24f9808f552621e54c, type: 3}
 --- !u!1 &2611417091635579269
 GameObject:
   m_ObjectHideFlags: 0

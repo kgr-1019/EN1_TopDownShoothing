@@ -2,46 +2,41 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyGun : MonoBehaviour
+public class EnemyGun : Gun
 {
-    public Transform enemyFirePosition; // 敵の銃口位置
-    public Transform player;// プレイヤーのトランスフォーム
-    public EnemyBullet bullet;// Bulletクラスへの参照
-    private Vector3 hitPos;// Rayが当たる場所
-    
+    private const float kReloadCoolTime = 5;// クールタイム
+    private float reloadCoolTimer = 0;// リロードまでの時間
+    private int bulletCount = 0;// 撃った回数
+    private const int kMaxBullets = 3;// 何発撃つか
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        shotTimer = 0.2f;
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
-        
+        shotCount += Time.deltaTime;
+        if (reloadCoolTimer <= 0.0f) { return; }
+        reloadCoolTimer -= Time.deltaTime;
+        //base.Update();
     }
 
-    public void Shot()
+    public override void Shot()
     {
-        EnemyBullet bulletScript = Instantiate(bullet, enemyFirePosition.position, Quaternion.identity);
-
-        RaycastHit hit;
-        Ray fireRay = new Ray(enemyFirePosition.position, enemyFirePosition.forward);
-
-        // Rayが当たる処理
-        if (Physics.Raycast(fireRay, out hit))
+        if (reloadCoolTimer > 0.0f) { return; }
+        // 弾を撃つ
+        if (shotCount >= shotTimer)
         {
-            hitPos = hit.point;
+            base.Shot();
+            shotCount = 0.0f;// カウントリセット
+            --bulletCount;// 撃ったら減らす
         }
-        else
+        if (bulletCount <= 0)// 三発撃ち切ったら
         {
-            hitPos = enemyFirePosition.transform.position + enemyFirePosition.transform.forward * 5.0f;
+            bulletCount = kMaxBullets;// リセット
+            reloadCoolTimer = kReloadCoolTime;
         }
-
-        Debug.DrawRay(fireRay.origin, fireRay.direction * 100, Color.red, 0.1f);
-
-        
-        bulletScript.SetUp(enemyFirePosition.position, hitPos);
     }
 }
