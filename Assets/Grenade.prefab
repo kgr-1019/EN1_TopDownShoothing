@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7350262837026777185}
   - component: {fileID: 6309607669572153300}
   - component: {fileID: 2380908043293863800}
-  m_Layer: 6
+  m_Layer: 2
   m_Name: Grenade
   m_TagString: Bullet
   m_Icon: {fileID: 0}

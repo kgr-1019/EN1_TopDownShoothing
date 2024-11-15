@@ -25,7 +25,7 @@ public class EnemyGun : Gun
 
     public override void Shot()
     {
-        if (reloadCoolTimer > 0.0f) { return; }
+        if (reloadCoolTimer > 0.0f) { return; }// リロード中は早期リターンする
         // 弾を撃つ
         if (shotCount >= shotTimer)
         {

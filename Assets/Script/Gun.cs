@@ -14,7 +14,6 @@ public class Gun : MonoBehaviour
     private Vector3 direction;// “G‚ÌUŒ‚ŠÖ”‚Ìˆø”
     public float shotTimer = 0.5f;
     public float shotCount = 0;
-    //public Bom bom;// BulletƒNƒ‰ƒX‚Ö‚ÌQÆ
     private float rotateSpeed = 50f;
 
 
